@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：命名空间，用于隔离sql，还有一个很重要的作用，后面会讲 -->
+<mapper namespace="com.example.demo.dao.UserDao">
+
+    <!--
+        动态代理的开发规范
+            1: 映射文件的namespace必须等于接口的全路径名称
+            2: 映射文件的sql唯一标示,必须等于接口的方法名称
+            3: 映射文件的parameterType必须等于接口方法的参数类型
+            4: 映射文件resultType必须等于接口方法的返回类型
+     -->
+
+    <select id="getUserByUsername" resultType="com.example.demo.entity.User">
+        SELECT
+            *
+        FROM
+            tb_admin
+        where username = #{username}
+    </select>
+
+    <select id="getUserListByUsername" resultType="com.example.demo.entity.User">
+        SELECT
+            *
+        FROM
+            tb_admin
+        WHERE username like concat('%',concat(#{username},'%'))
+    </select>
+
+    <select id="queryUserByName" resultType="com.example.demo.entity.User">
+        SELECT
+            *
+        FROM
+            tb_user
+        WHERE WeChat_name like concat('%',concat(#{userName},'%'))
+    </select>
+
+    <insert id="addWxUser" useGeneratedKeys="true" keyProperty="id"
+            keyColumn="id" parameterType="com.example.demo.entity.WxUser">
+         INSERT IGNORE INTO
+            tb_user(WeChat_sex,WeChat_name,WeChat_head,WeChat_openid)
+         VALUES(#{sex},#{name},#{head},#{openid})
+    </insert>
+
+    <update id="updateWxUser" parameterType="com.example.demo.entity.WxUser" >
+        UPDATE  tb_user
+        SET
+            WeChat_sex=#{sex},WeChat_name=#{name},WeChat_head=#{head}
+        WHERE WeChat_openid=#{openid}
+    </update>
+
+    <select id="getWxUserByOpenId" resultType="com.example.demo.entity.WxUser">
+        SELECT
+            *
+        FROM
+            tb_user
+        where WeChat_openid = #{openId}
+    </select>
+
+    <select id="getCommentPraise" resultType="java.lang.String">
+        SELECT comment_praise FROM tb_user WHERE WeChat_openid = #{openid}
+    </select>
+
+    <update id="updateCommentPraise" parameterType="com.example.demo.entity.WxUser" >
+        UPDATE  tb_user
+        <set>
+            <if test="commentPraise!=null">comment_praise=#{commentPraise}</if>
+        </set>
+        WHERE WeChat_openid=#{openid}
+    </update>
+</mapper>

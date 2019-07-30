@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：命名空间，用于隔离sql，还有一个很重要的作用，后面会讲 -->
+<mapper namespace="com.example.demo.dao.SensitiveDao">
+
+    <!--
+        动态代理的开发规范
+            1: 映射文件的namespace必须等于接口的全路径名称
+            2: 映射文件的sql唯一标示,必须等于接口的方法名称
+            3: 映射文件的parameterType必须等于接口方法的参数类型
+            4: 映射文件resultType必须等于接口方法的返回类型
+     -->
+
+    <select id="selectAllSensitive" resultType="com.example.demo.entity.Sensitive">
+        SELECT
+            *
+        FROM
+            tb_sensitive
+         WHERE word like concat('%',concat(#{word},'%'))
+    </select>
+
+    <insert id="addSensitive" useGeneratedKeys="true" keyProperty="id"
+            keyColumn="id" parameterType="com.example.demo.entity.Sensitive" >
+        INSERT INTO
+        tb_sensitive(word,time)
+        VALUES(#{word},#{time})
+    </insert>
+
+    <update id="updateSensitive" parameterType="com.example.demo.entity.Sensitive" >
+        UPDATE  tb_sensitive
+        <set>
+            <if test="word!=null">word=#{word},</if>
+            <if test="time!=null">time=#{time},</if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteSensitive">
+        DELETE FROM tb_sensitive
+        WHERE id=#{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：命名空间，用于隔离sql，还有一个很重要的作用，后面会讲 -->
+<mapper namespace="com.example.demo.dao.ClassifyDao">
+
+    <!--
+        动态代理的开发规范
+            1: 映射文件的namespace必须等于接口的全路径名称
+            2: 映射文件的sql唯一标示,必须等于接口的方法名称
+            3: 映射文件的parameterType必须等于接口方法的参数类型
+            4: 映射文件resultType必须等于接口方法的返回类型
+     -->
+
+    <select id="queryClassify" resultType="com.example.demo.entity.Classify">
+        SELECT
+            *
+        FROM
+            tb_classify
+    </select>
+
+    <select id="classifyListByName" resultType="com.example.demo.entity.Classify">
+        SELECT
+            *
+        FROM
+            tb_classify
+        WHERE classify_name like concat('%',concat(#{classifyName}),'%')
+    </select>
+
+    <select id="getClassify" resultType="com.example.demo.entity.Classify">
+        SELECT
+            *
+        FROM
+            tb_classify
+        where id = #{classifyId}
+    </select>
+
+    <insert id="AddClassify" useGeneratedKeys="true" keyProperty="id"
+            keyColumn="id" parameterType="com.example.demo.entity.Classify" >
+        INSERT INTO
+        tb_classify(classify_name,image)
+        VALUES(#{classifyName},#{image})
+    </insert>
+
+    <update id="updateClassify" parameterType="com.example.demo.entity.Classify" >
+        UPDATE  tb_classify
+        <set>
+            <if test="classifyName!=null">classify_name=#{classifyName},</if>
+            <if test="image!=null">image=#{image},</if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <delete id="deleteClassify">
+        DELETE FROM tb_classify
+        WHERE id=#{classifyId}
+    </delete>
+
+</mapper>

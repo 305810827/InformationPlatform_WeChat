@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：命名空间，用于隔离sql，还有一个很重要的作用，后面会讲 -->
+<mapper namespace="com.example.demo.dao.ArticleDao">
+
+    <!--
+        动态代理的开发规范
+            1: 映射文件的namespace必须等于接口的全路径名称
+            2: 映射文件的sql唯一标示,必须等于接口的方法名称
+            3: 映射文件的parameterType必须等于接口方法的参数类型
+            4: 映射文件resultType必须等于接口方法的返回类型
+     -->
+
+    <select id="queryArticle" resultType="com.example.demo.entity.Article">
+        SELECT
+            article_id,create_time,article_title,image_url,article_desc
+        FROM
+            tb_article
+        ORDER BY create_time
+        DESC
+        LIMIT #{start},#{end}
+    </select>
+
+    <select id="queryArticleById" resultType="com.example.demo.entity.Article">
+        SELECT
+            *
+        FROM
+            tb_article
+        WHERE article_id=#{articleId}
+    </select>
+
+    <select id="queryArticleByTitle" resultType="com.example.demo.entity.Article">
+        SELECT
+            *
+        FROM
+            tb_article
+        WHERE article_title like concat('%',concat(#{articleTitle},'%'))
+    </select>
+
+    <select id="getArticleByClassify" resultType="com.example.demo.entity.Article">
+        SELECT
+            article_id,create_time,article_title,image_url,article_desc
+        FROM
+            tb_article
+        where article_classify = #{classifyName}
+        ORDER BY create_time
+        DESC
+        LIMIT #{start},#{end}
+    </select>
+
+    <select id="searchArticle" resultType="com.example.demo.entity.Article">
+        SELECT
+            article_id,create_time,article_title,image_url,article_desc
+        FROM
+            tb_article
+        where article_title like CONCAT(CONCAT('%',#{searchData}),'%') or article_desc like CONCAT(CONCAT('%',#{searchData}),'%')
+        ORDER BY create_time
+        DESC
+            LIMIT #{start},#{end}
+    </select>
+
+    <insert id="insertArticle" useGeneratedKeys="true" keyProperty="articleId"
+            keyColumn="article_id" parameterType="com.example.demo.entity.Article" >
+        INSERT INTO
+        tb_article(article_title,image_url,article_desc,article_classify,create_time,article_content,collect_count)
+        VALUES(#{articleTitle},#{imageUrl},#{articleDesc},#{articleClassify},#{createTime},#{articleContent},#{collectCount})
+    </insert>
+
+    <update id="updateArticle" parameterType="com.example.demo.entity.Article" >
+        UPDATE  tb_article
+        <set>
+            <if test="articleTitle!=null">article_title=#{articleTitle},</if>
+            <if test="articleClassify!=null">article_classify=#{articleClassify},</if>
+            <if test="articleDesc!=null">article_desc=#{articleDesc},</if>
+            <if test="createTime!=null">create_time=#{createTime},</if>
+            <if test="articleContent!=null">article_content=#{articleContent},</if>
+            <if test="imageUrl!=null">image_url=#{imageUrl},</if>
+        </set>
+        WHERE article_id=#{articleId}
+    </update>
+
+    <update id="updateArticleCollect" parameterType="com.example.demo.entity.Article" >
+        UPDATE  tb_article
+        <set>
+            <if test="collectCount!=null">collect_count=#{collectCount}</if>
+        </set>
+        WHERE article_id=#{articleId}
+    </update>
+
+    <delete id="deleteArticle">
+        DELETE FROM tb_article
+        WHERE article_id=#{articleId}
+    </delete>
+
+    <delete id="deletesArticle" parameterType="java.util.List">
+        DELETE FROM tb_article
+        WHERE article_id in
+        <foreach collection="list" item="id"
+                 open="(" close=")" index="index" separator=",">
+            #{list}
+        </foreach>
+    </delete>
+</mapper>
